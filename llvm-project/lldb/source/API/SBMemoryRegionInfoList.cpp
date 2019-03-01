@@ -1,0 +1,130 @@
+//===-- SBMemoryRegionInfoList.cpp ------------------------------*- C++ -*-===//
+//
+// Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
+// See https://llvm.org/LICENSE.txt for license information.
+// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+//
+//===----------------------------------------------------------------------===//
+
+#include "lldb/API/SBMemoryRegionInfoList.h"
+#include "lldb/API/SBMemoryRegionInfo.h"
+#include "lldb/API/SBStream.h"
+#include "lldb/Target/MemoryRegionInfo.h"
+#include "lldb/Utility/Log.h"
+
+#include <vector>
+
+using namespace lldb;
+using namespace lldb_private;
+
+class MemoryRegionInfoListImpl {
+public:
+  MemoryRegionInfoListImpl() : m_regions() {}
+
+  MemoryRegionInfoListImpl(const MemoryRegionInfoListImpl &rhs)
+      : m_regions(rhs.m_regions) {}
+
+  MemoryRegionInfoListImpl &operator=(const MemoryRegionInfoListImpl &rhs) {
+    if (this == &rhs)
+      return *this;
+    m_regions = rhs.m_regions;
+    return *this;
+  }
+
+  size_t GetSize() const { return m_regions.size(); }
+
+  void Reserve(size_t capacity) { return m_regions.reserve(capacity); }
+
+  void Append(const MemoryRegionInfo &sb_region) {
+    m_regions.push_back(sb_region);
+  }
+
+  void Append(const MemoryRegionInfoListImpl &list) {
+    Reserve(GetSize() + list.GetSize());
+
+    for (const auto &val : list.m_regions)
+      Append(val);
+  }
+
+  void Clear() { m_regions.clear(); }
+
+  bool GetMemoryRegionInfoAtIndex(size_t index,
+                                  MemoryRegionInfo &region_info) {
+    if (index >= GetSize())
+      return false;
+    region_info = m_regions[index];
+    return true;
+  }
+
+  MemoryRegionInfos &Ref() { return m_regions; }
+
+  const MemoryRegionInfos &Ref() const { return m_regions; }
+
+private:
+  MemoryRegionInfos m_regions;
+};
+
+MemoryRegionInfos &SBMemoryRegionInfoList::ref() { return m_opaque_up->Ref(); }
+
+const MemoryRegionInfos &SBMemoryRegionInfoList::ref() const {
+  return m_opaque_up->Ref();
+}
+
+SBMemoryRegionInfoList::SBMemoryRegionInfoList()
+    : m_opaque_up(new MemoryRegionInfoListImpl()) {}
+
+SBMemoryRegionInfoList::SBMemoryRegionInfoList(
+    const SBMemoryRegionInfoList &rhs)
+    : m_opaque_up(new MemoryRegionInfoListImpl(*rhs.m_opaque_up)) {}
+
+SBMemoryRegionInfoList::~SBMemoryRegionInfoList() {}
+
+const SBMemoryRegionInfoList &SBMemoryRegionInfoList::
+operator=(const SBMemoryRegionInfoList &rhs) {
+  if (this != &rhs) {
+    *m_opaque_up = *rhs.m_opaque_up;
+  }
+  return *this;
+}
+
+uint32_t SBMemoryRegionInfoList::GetSize() const {
+  return m_opaque_up->GetSize();
+}
+
+bool SBMemoryRegionInfoList::GetMemoryRegionAtIndex(
+    uint32_t idx, SBMemoryRegionInfo &region_info) {
+  Log *log(GetLogIfAllCategoriesSet(LIBLLDB_LOG_API));
+
+  bool result = m_opaque_up->GetMemoryRegionInfoAtIndex(idx, region_info.ref());
+
+  if (log) {
+    SBStream sstr;
+    region_info.GetDescription(sstr);
+    log->Printf("SBMemoryRegionInfoList::GetMemoryRegionAtIndex (this.ap=%p, "
+                "idx=%d) => SBMemoryRegionInfo (this.ap=%p, '%s')",
+                static_cast<void *>(m_opaque_up.get()), idx,
+                static_cast<void *>(region_info.m_opaque_up.get()),
+                sstr.GetData());
+  }
+
+  return result;
+}
+
+void SBMemoryRegionInfoList::Clear() { m_opaque_up->Clear(); }
+
+void SBMemoryRegionInfoList::Append(SBMemoryRegionInfo &sb_region) {
+  m_opaque_up->Append(sb_region.ref());
+}
+
+void SBMemoryRegionInfoList::Append(SBMemoryRegionInfoList &sb_region_list) {
+  m_opaque_up->Append(*sb_region_list);
+}
+
+const MemoryRegionInfoListImpl *SBMemoryRegionInfoList::operator->() const {
+  return m_opaque_up.get();
+}
+
+const MemoryRegionInfoListImpl &SBMemoryRegionInfoList::operator*() const {
+  assert(m_opaque_up.get());
+  return *m_opaque_up;
+}
