@@ -19,6 +19,29 @@ CFI-LB: Adaptive Call-site Sensitive Control Flow Integrity will publish in Euro
 
 **Adaptive filter algorithm:** utils/filter.py
 
+**Concolic CFG generator:** cCFG/
+
+## Overall Process
+Step 1: A clang libtool will prepare the target code base.
+
+Step 2: Copy the CFILB runtime library to the source directory.
+
+Step 3: Build the source with clang (with reference monitor instrumentation) and generate the bitcode.
+
+Step 4: Run a LLVM Pass analysis to calculate the static CFG and instrument the table back to bitcode.
+
+Step 5: Build the binary from the step 4 bitcode.
+
+Step 6: Extract symbol table from the elf binary.
+
+Step 7: Execute the binary with seed input using intel pin tool to generate dynamic CFG.
+
+Step 8: Run a python script to apply the adaptive algorithm.
+
+Step 9: Run another LLVM Pass to instrument the adaptive dynamic CFG table in the bitcode.
+
+Step 10: Build the final binary from the step 9 bitcode. The binary will be named as: benchmarkname_cfg
+
 ## Installation Guideline
 1. Git clone the project:
 ```text
@@ -55,6 +78,7 @@ cd ../llvm-project
 mkdir build
 cmake -DLLVM_BINUTILS_INCDIR="path_to_binutils/include"  -DLLVM_ENABLE_PROJECTS=clang -G "Unix Makefiles" ../llvm
 make -j8
+sudo make install
 ```
 
 6. Backup ar, nm, ld and ranlib:
@@ -102,3 +126,21 @@ cd ../dCFG
 make PIN_ROOT=../intel-pin/
 make PIN_ROOT=../intel-pin/ obj-intel64/dCFG.so
 ```
+
+## Spec Benchmark Build Guideline
+1. Use spec2006-cfilb.cfg to build the spec cpu2006 benchmark.
+2. Change the Makefile.spec in the build directory of the benchmark:
+```text
+# add cfilb.c in the source list, keep others same
+SOURCES=cfilb.c ...
+#if you have not installed the clang/llvm, then change
+CC               = clang ...
+# to
+CC               = /path_to_llvm_project/build/bin/clang ..
+# and
+CXX              = clang++ ...
+# to
+CXX              = /path_to_llvm_project/build/bin/clang++
+```
+3. Change the run.sh (line 68)(follow the comments there).
+4. Use the run.sh to start the system.
