@@ -351,8 +351,6 @@ int emulate(triton::uint64 pc, triton::uint64 exit_addr,
 
     isSupported = api.processing(instruction);
 
-    cout << "[Sym-Emulator] instruction => " << instruction << endl;
-
     if (!isSupported) {
       if (DEBUG)
         cout << "[Sym-Emulator] instruction is not supported by triton: "

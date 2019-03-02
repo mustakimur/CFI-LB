@@ -11,7 +11,7 @@
 #include <triton/x86Specifications.hpp>
 
 // false to stop showing debug information
-#define DEBUG true
+#define DEBUG false
 
 // default address setup for stack, plt, argv memories
 #define BASE_PLT 0x1000000
