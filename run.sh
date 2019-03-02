@@ -66,6 +66,19 @@ cd $iDir
 python "$pDir""/utils/extract.py" "$binaryName""_scfg"
 # modify the next line with seeds to execute (e.g. 456.hmmer case). You can add multiple seeds to execute multiple time
 #"$pDir""/intel-pin/pin" -t "$pDir""/dCFG/obj-intel64/dCFG.so" -- ./"$binaryName""_scfg" nph3.hmm swiss41
+
+echo 0 | sudo tee /proc/sys/kernel/randomize_va_space
+#"$pDir""/intel-pin/pin" -t "$pDir""/cHelper/obj-intel64/sym-dump.so" -- ./"$binaryName""_scfg" nph3.hmm swiss41
+echo 2 | sudo tee /proc/sys/kernel/randomize_va_space
+
+python "$pDir""/utils/symHelper.py" "$binaryName""_scfg"
+input="sym_monitor.txt"
+while read var1 var2
+do
+  echo "sym-engine is running for " "$var1" "$var2"
+  "$pDir""cCFG/triton/sym_engine/build/src/examples/symCFG/symEmulator" $source "$binaryName""_scfg" "$var1" "$var2"
+done < "$input"
+
 python "$pDir""/utils/filter.py"
 cd $sDir
 
