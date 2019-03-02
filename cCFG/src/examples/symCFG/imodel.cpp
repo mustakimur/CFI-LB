@@ -58,10 +58,10 @@ void copyToTable(EventIndiCall *ev) {
 
 // write back to cfg
 void write_to_callfd(EventIndiCall *ev) {
-  string analysisFile = "analysis.out";
+  string analysisFile = "cfilb_cfg.bin";
   writefd.open(analysisFile.c_str(), std::ofstream::app);
-  writefd << ev->raddr3 << "\t" << ev->raddr2 << "\t" << ev->raddr1 << "\t"
-          << ev->iaddr << "\t" << ev->taddr << "\n";
+  writefd << ev->iaddr << "\t" << ev->taddr << "\t" << ev->raddr1 << "\t"
+          << ev->raddr2 << "\t" << ev->raddr3 << "\n";
   writefd.close();
 }
 
@@ -473,8 +473,8 @@ int emulate(triton::uint64 pc, triton::uint64 exit_addr,
         if (!isExist(ev) && validTarget(ev->taddr)) {
           hitSuccess = true;
           copyToTable(ev);
-          cout << hex << ev->raddr3 << "\t" << ev->raddr2 << "\t" << ev->raddr1
-               << "\t" << ev->iaddr << "\t" << ev->taddr << dec << endl;
+          cout << hex << ev->iaddr << "\t" << ev->taddr << "\t" << ev->raddr1
+               << "\t" << ev->raddr2 << "\t" << ev->raddr3 << dec << endl;
           cout << "==> Hurray!!! look we have discovered another ..." << endl;
           write_to_callfd(ev);
         }
@@ -866,15 +866,15 @@ int main(int ac, const char *av[]) {
   unsigned long long emulation_start_point = strtoul(av[3], NULL, 10);
 
   // load existing cfg table
-  string analysisFile = "analysis.out";
+  string analysisFile = "cfilb_cfg.bin";
   ifstream initcallfd;
   initcallfd.open(analysisFile.c_str());
   if (initcallfd.is_open()) {
-    while (initcallfd >> iCollection[iCollectionCounter].raddr3 >>
-           iCollection[iCollectionCounter].raddr2 >>
+    while (initcallfd >> iCollection[iCollectionCounter].iaddr >>
+           iCollection[iCollectionCounter].taddr >>
            iCollection[iCollectionCounter].raddr1 >>
-           iCollection[iCollectionCounter].iaddr >>
-           iCollection[iCollectionCounter].taddr) {
+           iCollection[iCollectionCounter].raddr2 >>
+           iCollection[iCollectionCounter].raddr3) {
       iCollectionCounter++;
     }
   }
