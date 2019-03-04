@@ -351,6 +351,8 @@ int emulate(triton::uint64 pc, triton::uint64 exit_addr,
 
     isSupported = api.processing(instruction);
 
+    cout << "[Sym-Emulator] instruction => " << instruction << endl;
+
     if (!isSupported) {
       if (DEBUG)
         cout << "[Sym-Emulator] instruction is not supported by triton: "
@@ -397,8 +399,11 @@ int emulate(triton::uint64 pc, triton::uint64 exit_addr,
 
       unsigned long long call_target;
       unsigned long long call_point;
+      unsigned long long call_point_id;
 
       // time to look for the call point
+      call_point_id = (triton::uint64)api.getConcreteRegisterValue(
+        Register(triton::arch::x86::ID_REG_EDI));
       pc = instruction.getNextAddress();
       while (1) {
         std::vector<triton::uint8> t_opcodes =
@@ -460,7 +465,7 @@ int emulate(triton::uint64 pc, triton::uint64 exit_addr,
         ev->raddr1 = callStack->head1();
         ev->raddr2 = callStack->head2();
         ev->raddr3 = callStack->head3();
-        ev->iaddr = call_point;
+        ev->iaddr = call_point_id;
         ev->taddr = call_target;
 
         if (hitSuccess && event->raddr1 != ev->raddr1 &&
@@ -990,7 +995,7 @@ int main(int ac, const char *av[]) {
     }
   }
   delete binary;
-  debug("symbolic code coverage have done his job"); 
+  debug("symbolic code coverage have done his job");
 
   return 1;
 }

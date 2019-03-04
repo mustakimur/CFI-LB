@@ -80,7 +80,7 @@ if [[ $isConcolic = y ]]; then
   while read var1 var2
   do
     echo "sym-engine is running for " "$var1" "$var2"
-    "$pDir""cCFG/build/src/examples/symCFG/symEmulator" "$binaryName""_scfg" "$var1" "$var2"
+    "$pDir""/cCFG/triton/sym_engine/build/src/examples/symCFG/symEmulator" "$binaryName""_scfg" "$var1" "$var2"
   done < "$input"
 fi
 

@@ -2,7 +2,13 @@
 
 CFI-LB: Adaptive Call-site Sensitive Control Flow Integrity will publish in EuroS&P' 2019. The source code is available here. The protoype is build with Clang/LLVM, Intel pin, Radare2, and Triton (Symbolic Execution Engine)(each of them have multiple dependencies). To build Clang/LLVM, it requires 20GB memory along, so please make sure your machine can support that load. The **run.sh** may ask for sudo permission to install dependent library and enable/disable ASLR for process memory dump to use in concolic process.
 
-Author: Mustakimur Rahman Khandaker (mrk15e@my.fsu.edu)
+Authors: 
+* Mustakimur Rahman Khandaker (mrk15e@my.fsu.edu)
+* Abu Naser (an16e@my.fsu.edu)
+* Wenqing Liu (wl16c@my.fsu.edu)
+* Zhi Wang (zwang@cs.fsu.edu)
+* Yajin Zhou (yajin_zhou@zju.edu.cn)
+* Yueqiang Cheng (chengyueqiang@baidu.com)
 
 ## Project Structure
 **CFILB reference monitor implementation:** cfilbLibs/
