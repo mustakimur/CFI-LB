@@ -36,13 +36,20 @@ if(__name__ == '__main__'):
             call_site3 = int(line.split('\t')[4].rstrip(), 10)
 
             # following replaces any external call-site to a 0xffaaee
+            flag3 = True, flag2 = True, flag1 = True
             for key, val in proc_map.iteritems():
-                if(not(call_site3 >= key and call_site3 <= (key + val))):
-                    call_site3 = 0xffaaee
-                if(not(call_site2 >= key and call_site2 <= (key + val))):
-                    call_site2 = 0xffaaee
-                if(not (call_site1 >= key and call_site1 <= (key + val))):
-                    call_site1 = 0xffaaee
+                if(call_site3 >= key and call_site3 <= (key + val)):
+                    flag3 = False
+                if(call_site2 >= key and call_site2 <= (key + val)):
+                    flag2 = False
+                if(call_site1 >= key and call_site1 <= (key + val)):
+                    flag1 = False
+            if(flag3):
+                call_site3 = 0xffaaee
+            if(flag2):
+                call_site2 = 0xffaaee
+            if(flag1):
+                call_site1 = 0xffaaee
 
             if(not(call_point, call_site1, call_site2, call_site3) in com_map):
                 com_map[(call_point, call_site1, call_site2, call_site3)] = []
