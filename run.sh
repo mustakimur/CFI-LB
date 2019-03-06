@@ -17,12 +17,29 @@ read isConcolic
 
 cd $sDir
 
+input="$sDir""/seedDirectory"
+binary="$sDir""/binary"
+
 # refresh the target source
 make clean
 rm *.c *.h *.bc *.ll *.bin *.log *.asm
-rm -r binary
+rm -r $binary
 cp ../../src/*.c .
 cp ../../src/*.h .
+
+mkdir $binary
+
+if [ ! -d "$input" ]; then
+	mkdir $input
+fi
+
+cd $input
+echo "please copy your seed files (if you have any) to following directory"
+pwd
+read -p "Press any key to continue"
+cp * $binary
+cd $sDir
+
 
 # copy the CFILB libs
 cp "$pDir""/cfiLibs/libs/cfilb.c" .
@@ -50,12 +67,8 @@ make
 "$pDir""/llvm-project/build/bin/llc" -filetype=obj "$binaryName"".0.4.scfg.bc"
 "$pDir""/llvm-project/build/bin/clang++" "$binaryName"".0.4.scfg.o" -o "$binaryName""_scfg"
 
-mkdir binary
-cp "$binaryName""_scfg" binary
-cd binary
-
-echo "please copy your seed files (if you have any) to following directory"
-pwd
+cp "$binaryName""_scfg" $binary
+cd $binary
 
 python "$pDir""/utils/extract.py" "$binaryName""_scfg"
 
@@ -87,7 +100,7 @@ fi
 python "$pDir""/utils/filter.py"
 cd $sDir
 
-"$pDir""/llvm-project/build/bin/opt" -load "$pDir""/llvm-project/build/lib/LLVMInstCFG.so" -llvm-inst-cfg -DIR_PATH="$sDir""/binary" < "$binaryName"".0.4.scfg.bc" > "$binaryName"".0.4.cfg.bc"
+"$pDir""/llvm-project/build/bin/opt" -load "$pDir""/llvm-project/build/lib/LLVMInstCFG.so" -llvm-inst-cfg -DIR_PATH="$binary" < "$binaryName"".0.4.scfg.bc" > "$binaryName"".0.4.cfg.bc"
 
 # deassemble to .ll (option)
 # "$pDir""/llvm-project/build/bin/llvm-dis" "$binaryName"".0.4.cfg.bc"
@@ -96,4 +109,21 @@ cd $sDir
 "$pDir""/llvm-project/build/bin/llc" -filetype=obj "$binaryName"".0.4.cfg.bc"
 "$pDir""/llvm-project/build/bin/clang++" "$binaryName"".0.4.cfg.o" -o "$binaryName""_cfg"
 
-cp "$binaryName""_cfg" binary
+cp "$binaryName""_cfg" $binary
+
+cd $binary
+python "$pDir""/utils/calculate_diff.py" "$binaryName""_cfg"
+
+python "$pDir""/utils/filter.py"
+cd $sDir
+
+"$pDir""/llvm-project/build/bin/opt" -load "$pDir""/llvm-project/build/lib/LLVMInstCFG.so" -llvm-inst-cfg -DIR_PATH="$binary" < "$binaryName"".0.4.scfg.bc" > "$binaryName"".0.4.cfg.bc"
+
+# deassemble to .ll (option)
+# "$pDir""/llvm-project/build/bin/llvm-dis" "$binaryName"".0.4.cfg.bc"
+
+# build the binary
+"$pDir""/llvm-project/build/bin/llc" -filetype=obj "$binaryName"".0.4.cfg.bc"
+"$pDir""/llvm-project/build/bin/clang++" "$binaryName"".0.4.cfg.o" -o "$binaryName""_cfg"
+
+cp "$binaryName""_cfg" $binary

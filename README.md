@@ -64,13 +64,15 @@ Step 12: Run another LLVM Pass to instrument the adaptive dynamic CFG table in t
 
 Step 13: Build the final binary from the step 12 bitcode. The binary will be named as: benchmarkname_cfg
 
+Optional: Due to instrument CFG the code instruction address can be changed from concolic CFG, so there may be a repeat of step 11-13 with an additional check using a python script.
+
 ## Limitation on Concolic CFG
 Concolic CFG is build on Triton symbolic engine. Its result is random and the version on the development time was on developing (hence unstable and triton code base is completely different now), so you may face issues. Please, inform us if you have any issue. Our tool implementation is based on Triton Qemu emulation support, so, we have to write a emulation abi for libc library (for C only). Due to incompleteness of the prototype, the concolic CFG is only effective for Cint benchmark. **Note: this is only an engineering limitation. We expect the open source community will adopt the concept and help us for further improvements.**
 
 ## Installation Guideline
 1. Install required binary:
 ```text
-sudo apt install clang cmake subversion g++ gcc bash git python-pip libcapstone-dev libboost-all-dev libz3-dev
+sudo apt install wget clang cmake subversion g++ gcc bash git python-pip libcapstone-dev libboost-all-dev libz3-dev
 pip install pyelftools
 pip install r2pipe
 ```
@@ -167,6 +169,17 @@ make PIN_ROOT=../intel-pin/ obj-intel64/dCFG.so
 cd $CFILB_PATH/cHelper
 make PIN_ROOT=../intel-pin/
 make PIN_ROOT=../intel-pin/ obj-intel64/sym-dump.so
+```
+
+13. Build z3 solver from the source:
+```text
+cd $CFILB
+git clone https://github.com/Z3Prover/z3.git
+cd z3
+python scripts/mk_make.py
+cd build
+make
+sudo make install
 ```
 
 13. Build the concolic system with Triton:

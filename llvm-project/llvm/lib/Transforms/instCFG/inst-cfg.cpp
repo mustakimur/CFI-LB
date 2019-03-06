@@ -47,6 +47,7 @@ private:
         }
       }
     }
+    New->setSection(Old->getSection());
   }
 
 public:

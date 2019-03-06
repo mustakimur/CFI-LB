@@ -42,7 +42,7 @@ def record_main_function_address(elfBinary):
             if ('STV_DEFAULT' in (sym.entry['st_other'])['visibility']
                     and 'STT_FUNC' in (sym.entry['st_info'])['type']
                 and (sym.entry['st_shndx'] == 14 or sym.entry['st_shndx'] == 13 or sym.entry['st_shndx'] == 12)
-                    and str(sym.name) == 'main'):
+                    and str(sym.name) == '_fini'):
                 file.write(str(sym.entry['st_value']) + "\n")
     file.close()
 
