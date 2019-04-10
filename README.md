@@ -2,14 +2,6 @@
 
 CFI-LB: Adaptive Call-site Sensitive Control Flow Integrity will publish in EuroS&P' 2019. The source code is available here. The protoype is build with Clang/LLVM, Intel pin, Radare2, and Triton (Symbolic Execution Engine)(each of them have multiple dependencies). To build Clang/LLVM, it requires 20GB memory along, so please make sure your machine can support that load. The **run.sh** may ask for sudo permission to install dependent library and enable/disable ASLR for process memory dump to use in concolic process.
 
-Authors: 
-* Mustakimur Rahman Khandaker (mrk15e@my.fsu.edu)
-* Abu Naser (an16e@my.fsu.edu)
-* Wenqing Liu (wl16c@my.fsu.edu)
-* Zhi Wang (zwang@cs.fsu.edu)
-* Yajin Zhou (yajin_zhou@zju.edu.cn)
-* Yueqiang Cheng (chengyueqiang@baidu.com)
-
 ## Project Structure
 **CFILB reference monitor implementation:** cfilbLibs/
 
@@ -65,9 +57,6 @@ Step 12: Run another LLVM Pass to instrument the adaptive dynamic CFG table in t
 Step 13: Build the final binary from the step 12 bitcode. The binary will be named as: benchmarkname_cfg
 
 Optional: Due to instrument CFG the code instruction address can be changed from concolic CFG, so there may be a repeat of step 11-13 with an additional check using a python script.
-
-## Limitation on Concolic CFG
-Concolic CFG is build on Triton symbolic engine. Its result is random and the version on the development time was on developing (hence unstable and triton code base is completely different now), so you may face issues. Please, inform us if you have any issue. Our tool implementation is based on Triton Qemu emulation support, so, we have to write a emulation abi for libc library (for C only). Due to incompleteness of the prototype, the concolic CFG is only effective for Cint benchmark. **Note: this is only an engineering limitation. We expect the open source community will adopt the concept and help us for further improvements.**
 
 ## Installation Guideline
 1. Install required binary:
