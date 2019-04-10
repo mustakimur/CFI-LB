@@ -7,7 +7,6 @@ add_subdirectory(clang-apply-replacements)
 add_subdirectory(clang-reorder-fields)
 add_subdirectory(modularize)
 add_subdirectory(clang-tidy)
-add_subdirectory(clang-tidy-vs)
 
 add_subdirectory(change-namespace)
 add_subdirectory(clang-doc)
