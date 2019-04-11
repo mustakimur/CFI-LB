@@ -1,11 +1,6 @@
 /*
  * CFI-LB: Adaptive Call-site Sensitive Control Flow Integrity
  * Authors: Mustakimur Khandaker (Florida State University)
- * Abu Naser (Florida State University)
- * Wenqing Liu (Florida State University)
- * Zhi Wang (Florida State University)
- * Yajin Zhou (Zhejiang University)
- * Yueqiang Chen (Baidu X-lab)
  */
 #include "cfilb.h"
 #include <stdio.h>

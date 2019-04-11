@@ -1,7 +1,6 @@
 /*
- * Project: Adaptive Control Flow Integrity with Look Back and Multi-scope CFG
- * Generation Author: Mustakimur Rahman Khandaker (mrk15e@my.fsu.edu) Florida
- * State University Supervised: Dr. Zhi Wang
+ * CFI-LB: Adaptive Call-site Sensitive Control Flow Integrity
+ * Authors: Mustakimur Khandaker (Florida State University)
  */
 
 #include "pin.H"

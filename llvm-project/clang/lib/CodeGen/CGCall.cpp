@@ -4351,15 +4351,6 @@ RValue CodeGenFunction::EmitCall(const CGFunctionInfo &CallInfo,
       getBundlesForFunclet(CalleePtr);
 
   // [CFI-LB] Instrument Reference Monitor
-  /*
- * CFI-LB: Adaptive Call-site Sensitive Control Flow Integrity
- * Authors: Mustakimur Khandaker (Florida State University)
- * Abu Naser (Florida State University)
- * Wenqing Liu (Florida State University)
- * Zhi Wang (Florida State University)
- * Yajin Zhou (Zhejiang University)
- * Yueqiang Chen (Baidu X-lab)
- */
   if (!(CalleePtr->stripPointerCasts())->hasName()) {
     std::hash<std::string> hash_fn;
     llvm::Value *tempCalleePtr = CalleePtr;
