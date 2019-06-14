@@ -171,7 +171,7 @@ make
 sudo make install
 ```
 
-13. Build the concolic system with Triton:
+14. Build the concolic system with Triton:
 ```text
 cd $CFILB_PATH/cCFG
 mkdir build
